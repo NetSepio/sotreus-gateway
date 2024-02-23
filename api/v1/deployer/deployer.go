@@ -3,7 +3,6 @@ package deployer
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/NetSepio/sotreus-gateway/api/middleware/auth/paseto"
@@ -20,6 +19,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 	{
 		g.Use(paseto.PASETO(false))
 		g.POST("", Deploy)
+		g.GET("", getMyDeployments)
 	}
 }
 
@@ -49,7 +49,12 @@ func Deploy(c *gin.Context) {
 		return
 	}
 	ServerLink := regions.Regions[req.Region].ServerHttp
-	deployerRequest := DeployerCreateRequest{SotreusID: req.Name, WalletAddress: walletAddress, Region: regions.Regions[req.Region].Code}
+	deployerRequest := DeployerCreateRequest{
+		SotreusID:     req.Name,
+		WalletAddress: walletAddress,
+		Password:      req.Password,
+		Region:        regions.Regions[req.Region].Code,
+	}
 	reqBodyBytes, err := json.Marshal(deployerRequest)
 	if err != nil {
 		logwrapper.Errorf("failed to encode request: %s", err)
@@ -76,36 +81,50 @@ func Deploy(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		logwrapper.Errorf("failed to send request: %s", err)
-		httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
-		return
-	}
+	// body, err := io.ReadAll(resp.Body)
+	// if err != nil {
+	// 	logwrapper.Errorf("failed to send request: %s", err)
+	// 	httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
+	// 	return
+	// }
 
-	response := new(SotreusResponse)
+	// response := new(SotreusResponse)
 
-	if err := json.Unmarshal(body, response); err != nil {
-		logwrapper.Errorf("failed to get response: %s", err)
-		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
-		return
+	// if err := json.Unmarshal(body, response); err != nil {
+	// 	logwrapper.Errorf("failed to get response: %s", err)
+	// 	httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
+	// 	return
+	// }
+	instance := models.Sotreus{
+		Name:             req.Name,
+		WalletAddress:    walletAddress,
+		Region:           req.Region,
+		VpnEndpoint:      req.Name + "-vpn." + req.Region + ".sotreus.com",
+		FirewallEndpoint: req.Name + "-firewall." + req.Region + ".sotreus.com",
+		Password:         req.Password,
 	}
-	contract := models.Sotreus{
-		Name:          response.Message.VpnID,
-		WalletAddress: walletAddress,
-		Region:        req.Region,
-	}
-	result := db.Create(&contract)
+	result := db.Create(&instance)
 	if result.Error != nil {
 		logwrapper.Errorf("failed to create db entry: %s", err)
 		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
 		return
 	}
 	payload := DeployResponse{
-		VpnID:             response.Message.VpnID,
-		VpnEndpoint:       response.Message.VpnEndpoint,
-		FirewallEndpoint:  response.Message.FirewallEndpoint,
-		DashboardPassword: response.Message.DashboardPassword,
+		VpnID: req.Name,
 	}
 	httpo.NewSuccessResponseP(200, "VPN deployment successful", payload).SendD(c)
+}
+
+func getMyDeployments(c *gin.Context) {
+	db := dbconfig.GetDb()
+	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRES)
+	var instances []models.Sotreus
+	if err := db.Model(&models.Sotreus{}).Where("wallet_address = ?", walletAddress).Find(&instances).Error; err != nil {
+		logwrapper.Errorf("failed to fetch DB : %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to fetch DB").SendD(c)
+		return
+
+	}
+	httpo.NewSuccessResponseP(200, "VPN's fetched successfully", instances).SendD(c)
+
 }

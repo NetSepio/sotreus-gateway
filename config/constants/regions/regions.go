@@ -17,25 +17,10 @@ var ErebrusRegions map[string]Region
 
 func InitRegions() {
 	Regions = map[string]Region{
-		"us-east-2": {
-			Name:       "US east 2",
-			Code:       "us-east-2",
+		"us02": {
+			Name:       "US 2",
+			Code:       "us02",
 			ServerHttp: envconfig.EnvVars.VPN_DEPLOYER_API_US_EAST,
-		},
-		"ap-southeast-1": {
-			Name:       "Asia Pacific",
-			Code:       "ap-southeast-1",
-			ServerHttp: envconfig.EnvVars.VPN_DEPLOYER_API_SG,
-		},
-		"us": {
-			Name:       "US",
-			Code:       "us",
-			ServerHttp: envconfig.EnvVars.SOTREUS_US,
-		},
-		"sg": {
-			Name:       "Singapore",
-			Code:       "sg",
-			ServerHttp: envconfig.EnvVars.SOTREUS_SG,
 		},
 	}
 }

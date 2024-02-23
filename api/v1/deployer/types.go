@@ -3,13 +3,16 @@ package deployer
 import "gorm.io/gorm"
 
 type DeployRequest struct {
-	Name   string `json:"name" binding:"required"`
-	Region string `json:"region" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Region   string `json:"region" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 type DeployerCreateRequest struct {
 	SotreusID     string `json:"sotreusID" binding:"required"`
 	WalletAddress string `json:"walletAddress" binding:"required"`
 	Region        string `json:"region" binding:"required"`
+	Email         string `json:"email,omitempty"`
+	Password      string `json:"password,omitempty"`
 }
 type SotreusRequest struct {
 	VpnId string `json:"vpnId" binding:"required"`
