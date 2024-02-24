@@ -44,8 +44,8 @@ jobs:
         port: ${{ secrets.DEV_SSH_PORT }} 
         script: |
           pwd
-          cd gateway
-          docker stop gateway && docker rm gateway && docker image rm ghcr.io/netsepio/gateway:main
+          cd sotreus-gateway
+          docker stop sotreus-gateway && docker rm sotreus-gateway && docker image rm ghcr.io/netsepio/sotreus-gateway:main
           echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
-          docker pull ghcr.io/netsepio/gateway:main
+          docker pull ghcr.io/netsepio/sotreus-gateway:main
           docker run --restart=on-failure:14 --dns=1.1.1.1 --name="sotreus-gateway" --env-file=.env -p 3000:3000 --net=bridge -d ghcr.io/netsepio/sotreus-gateway:main
