@@ -25,10 +25,8 @@ func GetDb() *gorm.DB {
 		dbname   = envconfig.EnvVars.DB_NAME
 		port     = envconfig.EnvVars.DB_PORT
 	)
-	fmt.Println("host", host)
 	dns := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable port=%d",
 		host, username, password, dbname, port)
-	fmt.Println(dns)
 	var err error
 	db, err = gorm.Open(postgres.New(postgres.Config{
 		DSN: dns,
