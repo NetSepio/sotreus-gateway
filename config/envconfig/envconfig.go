@@ -11,9 +11,9 @@ import (
 type config struct {
 	PASETO_PRIVATE_KEY string        `env:"PASETO_PRIVATE_KEY,required"`
 	PASETO_EXPIRATION  time.Duration `env:"PASETO_EXPIRATION,required"`
-	APP_PORT           int           `env:"APP_PORT,required"`
-	AUTH_EULA          string        `env:"AUTH_EULA,required"`
 	APP_NAME           string        `env:"APP_NAME,required"`
+	AUTH_EULA          string        `env:"AUTH_EULA,required"`
+	HTTP_PORT          string        `env:"HTTP_PORT,required"`
 	GIN_MODE           string        `env:"GIN_MODE,required"`
 	DB_HOST            string        `env:"DB_HOST,required"`
 	DB_USERNAME        string        `env:"DB_USERNAME,required"`
