@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/NetSepio/sotreus-gateway/api"
+	"github.com/NetSepio/sotreus-gateway/config/dbconfig"
 	"github.com/NetSepio/sotreus-gateway/config/envconfig"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ func main() {
 	godotenv.Load()
 	ginApp := gin.Default()
 	envconfig.InitEnvVars()
+	dbconfig.DbInit()
 	// cors middleware
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true

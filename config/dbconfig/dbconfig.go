@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/NetSepio/sotreus-gateway/config/envconfig"
+	"github.com/NetSepio/sotreus-gateway/models"
 
 	"gorm.io/driver/postgres"
 )
@@ -43,25 +44,14 @@ func GetDb() *gorm.DB {
 		log.Fatal("failed to ping database", err)
 	}
 
-	// if err := db.AutoMigrate(&models.User{}, &models.Role{}, &models.UserFeedback{}, &models.FlowId{}, &models.Review{}, &models.WaitList{}, &models.Domain{}, &models.DomainAdmin{}, &models.Sotreus{}, &models.Erebrus{}); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// db.Exec(`create table if not exists user_roles (
-	// 		wallet_address text,
-	// 		role_id text,
-	// 		unique (wallet_address,role_id)
-	// 		)`)
-
-	// //Create flow id
-	// db.Exec(`
-	// DO $$ BEGIN
-	// 	CREATE TYPE flow_id_type AS ENUM (
-	// 		'AUTH',
-	// 		'ROLE');
-	// EXCEPTION
-	// 	WHEN duplicate_object THEN null;
-	// END $$;`)
-
 	return db.Debug()
+}
+
+func DbInit() error {
+	db := GetDb()
+
+	if err := db.AutoMigrate(&models.User{}, &models.FlowId{}, &models.Sotreus{}); err != nil {
+		log.Fatal(err)
+	}
+	return nil
 }
