@@ -3,6 +3,7 @@ package deployer
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/NetSepio/sotreus-gateway/api/middleware/auth/paseto"
@@ -26,6 +27,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 func Deploy(c *gin.Context) {
 	db := dbconfig.GetDb()
 	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRES)
+	fmt.Println(walletAddress)
 
 	var count int64
 	err := db.Model(&models.Sotreus{}).Where("wallet_address = ?", walletAddress).Find(&models.Sotreus{}).Count(&count).Error
