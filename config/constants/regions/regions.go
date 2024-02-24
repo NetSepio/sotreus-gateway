@@ -20,7 +20,7 @@ func InitRegions() {
 		"us02": {
 			Name:       "US 2",
 			Code:       "us02",
-			ServerHttp: envconfig.EnvVars.VPN_DEPLOYER_API_US_EAST,
+			ServerHttp: envconfig.EnvVars.VPN_DEPLOYER_US02,
 		},
 	}
 }
