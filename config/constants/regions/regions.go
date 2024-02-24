@@ -9,7 +9,6 @@ type Region struct {
 }
 
 var Regions map[string]Region
-var ErebrusRegions map[string]Region
 
 //todo
 //Store regions in persistent DB

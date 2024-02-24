@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/NetSepio/sotreus-gateway/api"
+	"github.com/NetSepio/sotreus-gateway/config/constants"
 	"github.com/NetSepio/sotreus-gateway/config/dbconfig"
 	"github.com/NetSepio/sotreus-gateway/config/envconfig"
 	"github.com/gin-contrib/cors"
@@ -19,6 +20,7 @@ func main() {
 	ginApp := gin.Default()
 	envconfig.InitEnvVars()
 	dbconfig.DbInit()
+	constants.InitConstants()
 	// cors middleware
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
