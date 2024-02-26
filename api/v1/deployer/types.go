@@ -53,3 +53,7 @@ type Instance struct {
 	Status            string `json:"status"`
 	WalletAddress     string `json:"walletAddress,omitempty"`
 }
+
+type DeployerDeleteRequest struct {
+	SotreusID string `json:"sotreusID"`
+}

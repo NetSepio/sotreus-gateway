@@ -21,6 +21,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 		g.Use(paseto.PASETO(false))
 		g.POST("", Deploy)
 		g.GET("", getMyDeployments)
+		g.DELETE("", deleteDeployment)
 	}
 }
 
@@ -36,7 +37,6 @@ func Deploy(c *gin.Context) {
 		httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
 		return
 	}
-	fmt.Println(count)
 	if count >= 1 {
 		httpo.NewErrorResponse(http.StatusBadRequest, "Can't create more vpn instances, maximum 1 allowed").SendD(c)
 		return
@@ -127,5 +127,59 @@ func getMyDeployments(c *gin.Context) {
 
 	}
 	httpo.NewSuccessResponseP(200, "VPN's fetched successfully", instances).SendD(c)
+
+}
+
+func deleteDeployment(c *gin.Context) {
+	db := dbconfig.GetDb()
+	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRES)
+	sotreusName := c.Query("id")
+	fmt.Println(walletAddress)
+
+	var instance models.Sotreus
+	err := db.Model(&models.Sotreus{}).Where("wallet_address = ? and name = ?", walletAddress, sotreusName).First(&instance).Error
+	if err != nil {
+		logwrapper.Errorf("failed to fetch data from database: %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
+		return
+	}
+	ServerLink := regions.Regions[instance.Region].ServerHttp
+	deployerRequest := DeployerDeleteRequest{
+		SotreusID: sotreusName,
+	}
+	reqBodyBytes, err := json.Marshal(deployerRequest)
+	if err != nil {
+		logwrapper.Errorf("failed to encode request: %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
+		return
+	}
+	deleteReq, err := http.NewRequest(http.MethodDelete, ServerLink+"/sotreus", bytes.NewReader(reqBodyBytes))
+	if err != nil {
+		logwrapper.Errorf("failed to send request: %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
+		return
+	}
+	client := &http.Client{}
+	resp, err := client.Do(deleteReq)
+	if err != nil {
+		logwrapper.Errorf("failed to send request: %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
+		return
+	}
+	if resp.StatusCode != 200 {
+		logwrapper.Errorf("Error in response: %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, "Error in response").SendD(c)
+		return
+	}
+	defer resp.Body.Close()
+
+	result := db.Delete(&instance)
+	if result.Error != nil {
+		logwrapper.Errorf("failed to create db entry: %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
+		return
+	}
+
+	httpo.NewSuccessResponse(200, "VPN deleted successfully").SendD(c)
 
 }
