@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/NetSepio/sotreus-gateway/api/middleware/auth/paseto"
@@ -82,21 +83,22 @@ func Deploy(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logwrapper.Errorf("failed to send request: %s", err)
+		httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
+		return
+	}
+	fmt.Println("res: ", string(body))
 
-	// body, err := io.ReadAll(resp.Body)
-	// if err != nil {
-	// 	logwrapper.Errorf("failed to send request: %s", err)
-	// 	httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
-	// 	return
-	// }
-
-	// response := new(SotreusResponse)
+	// response := new(ServiceInfoSotreus)
 
 	// if err := json.Unmarshal(body, response); err != nil {
 	// 	logwrapper.Errorf("failed to get response: %s", err)
 	// 	httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
 	// 	return
 	// }
+
 	instance := models.Sotreus{
 		Name:             req.Name,
 		WalletAddress:    walletAddress,

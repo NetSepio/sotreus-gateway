@@ -57,3 +57,19 @@ type Instance struct {
 type DeployerDeleteRequest struct {
 	SotreusID string `json:"sotreusID"`
 }
+
+type ServiceInfoSotreus struct {
+	gorm.Model
+	Name string `json:"name,omitempty"`
+	Type string `json:"type,omitempty"`
+	// Uuid      string                `json:"uuid,omitempty"`
+	Category           string `json:"category,omitempty"`
+	Status             string `json:"status,omitempty"`
+	CreatedAt          int64  `json:"createdAt,omitempty"`
+	UpdatedAt          int64  `json:"updatedAt,omitempty"`
+	DeletedAt          int64  `json:"deletedAt,omitempty"`
+	SotreusID          string `json:"sotreusID,omitempty"`
+	PiholeID           string `json:"piholeID,omitempty"`
+	SotreusContainerID string `json:"sotreusContainerID,omitempty"`
+	PiholeContainerID  string `json:"piholeContainerID,omitempty"`
+}
