@@ -10,6 +10,7 @@ import (
 	"github.com/NetSepio/sotreus-gateway/config/constants"
 	"github.com/NetSepio/sotreus-gateway/config/dbconfig"
 	"github.com/NetSepio/sotreus-gateway/config/envconfig"
+	"github.com/NetSepio/sotreus-gateway/util/pkg/logwrapper"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -21,6 +22,7 @@ func main() {
 	envconfig.InitEnvVars()
 	dbconfig.DbInit()
 	constants.InitConstants()
+	logwrapper.Init()
 	// cors middleware
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true

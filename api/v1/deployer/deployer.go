@@ -38,6 +38,7 @@ func Deploy(c *gin.Context) {
 		return
 	}
 	if count >= 1 {
+		logwrapper.Error("Can't create more vpn instances, maximum 1 allowed")
 		httpo.NewErrorResponse(http.StatusBadRequest, "Can't create more vpn instances, maximum 1 allowed").SendD(c)
 		return
 	}
