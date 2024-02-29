@@ -104,7 +104,7 @@ func Deploy(c *gin.Context) {
 		WalletAddress:    walletAddress,
 		Region:           req.Region,
 		VpnEndpoint:      req.Name + "-vpn." + req.Region + ".sotreus.com",
-		FirewallEndpoint: req.Name + "-firewall." + req.Region + ".sotreus.com",
+		FirewallEndpoint: req.Name + "-firewall." + req.Region + ".sotreus.com/admin",
 		Password:         req.Password,
 	}
 	result := db.Create(&instance)
