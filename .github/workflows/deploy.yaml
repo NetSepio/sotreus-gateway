@@ -48,7 +48,7 @@ jobs:
             docker pull ghcr.io/netsepio/sotreus-gateway:main
             docker run --restart=on-failure:14 --dns=1.1.1.1 --name="sotreus-gateway" --env-file=.env -p 3000:3000 --net=bridge -d ghcr.io/netsepio/sotreus-gateway:main
       - name: Deploy on PROD server
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/prod'
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.PROD_REMOTE_SERVER_ADDRESS }}
