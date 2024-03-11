@@ -68,7 +68,7 @@ func HandleWebhook(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, MaxBodyBytes)
 	payload, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		logwrapper.Errorf("failed to create new payment intent: %s", err)
+		logwrapper.Errorf("Error reading request body: %s", err)
 		httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
 		return
 	}
@@ -76,7 +76,7 @@ func HandleWebhook(c *gin.Context) {
 	event, err := webhook.ConstructEvent(payload, c.GetHeader("Stripe-Signature"), envconfig.EnvVars.STRIPE_WEBHOOK_SECRET)
 
 	if err != nil {
-		logwrapper.Errorf("failed to create new payment intent: %s", err)
+		logwrapper.Errorf("Error verifying webhook signature: %s", err)
 		httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
 		return
 	}
