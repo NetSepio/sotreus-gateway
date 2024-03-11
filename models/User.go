@@ -24,7 +24,7 @@ type UserStripePi struct {
 	CreatedAt    time.Time     `json:"createdAt,omitempty"`
 }
 
-var Erebrus111NFT TStripePiType = "Erebrus111NFT"
+var SotreusSubscription TStripePiType = "SotreusSubscription"
 
 type EmailAuth struct {
 	Id        string    `gorm:"primary_key" json:"id,omitempty"`
