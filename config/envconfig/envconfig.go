@@ -28,6 +28,7 @@ type config struct {
 	VPN_DEPLOYER_EU01     string        `env:"VPN_DEPLOYER_EU01,required"`
 	VPN_DEPLOYER_IN01     string        `env:"VPN_DEPLOYER_IN01,required"`
 	STRIPE_WEBHOOK_SECRET string        `env:"STRIPE_WEBHOOK_SECRET,required"`
+	STRIPE_SECRET_KEY     string        `env:"STRIPE_SECRET_KEY,required"`
 }
 
 var EnvVars config = config{}

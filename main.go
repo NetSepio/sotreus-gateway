@@ -14,6 +14,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/stripe/stripe-go/v76"
 )
 
 func main() {
@@ -23,6 +24,7 @@ func main() {
 	dbconfig.DbInit()
 	constants.InitConstants()
 	logwrapper.Init()
+	stripe.Key = envconfig.EnvVars.STRIPE_SECRET_KEY
 	// cors middleware
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
