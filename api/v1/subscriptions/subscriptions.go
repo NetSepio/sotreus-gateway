@@ -36,8 +36,9 @@ func CreatePaymentIntent(c *gin.Context) {
 	userId := c.GetString(paseto.CTX_USER_ID)
 	db := dbconfig.GetDb()
 	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(1099),
-		Currency: stripe.String(string(stripe.CurrencyUSD)),
+		Amount:      stripe.Int64(1099),
+		Currency:    stripe.String(string(stripe.CurrencyUSD)),
+		Description: stripe.String("Payment to purchase vpn subscription"),
 	}
 	pi, err := paymentintent.New(params)
 	if err != nil {
