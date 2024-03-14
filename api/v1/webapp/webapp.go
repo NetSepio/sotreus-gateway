@@ -15,7 +15,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 }
 
 func WebappAuth(c *gin.Context) {
-	walletAddress := paseto.CTX_WALLET_ADDRES
+	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRES)
 
 	res := webappResponse{
 		WalletAddress: walletAddress,
