@@ -57,6 +57,7 @@ func Deploy(c *gin.Context) {
 		WalletAddress: walletAddress,
 		Password:      req.Password,
 		Region:        regions.Regions[req.Region].Code,
+		Firewall:      req.Firewall,
 	}
 	reqBodyBytes, err := json.Marshal(deployerRequest)
 	if err != nil {
@@ -105,7 +106,8 @@ func Deploy(c *gin.Context) {
 		Region:           req.Region,
 		VpnEndpoint:      req.Name + "-vpn." + req.Region + ".sotreus.com",
 		FirewallEndpoint: req.Name + "-firewall." + req.Region + ".sotreus.com/admin",
-		Password:         req.Password,
+		Password:         string(req.Password),
+		Firewall:         string(req.Firewall),
 	}
 	result := db.Create(&instance)
 	if result.Error != nil {

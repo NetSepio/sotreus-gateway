@@ -7,4 +7,5 @@ type Sotreus struct {
 	VpnEndpoint      string `json:"VpnEndpoint"`
 	FirewallEndpoint string `json:"firewallEndpoint"`
 	Password         string `json:"password"`
+	Firewall         string `json:"firewall"`
 }

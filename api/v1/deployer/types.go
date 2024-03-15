@@ -3,16 +3,23 @@ package deployer
 import "gorm.io/gorm"
 
 type DeployRequest struct {
-	Name     string `json:"name" binding:"required"`
-	Region   string `json:"region" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Name     string       `json:"name" binding:"required"`
+	Region   string       `json:"region" binding:"required"`
+	Password string       `json:"password" binding:"required"`
+	Firewall FirewallType `json:"firewall,omitempty"`
 }
+type FirewallType string
+
+var FirewallPihole FirewallType = "pihole"
+var FirewallAdguard FirewallType = "adguard"
+
 type DeployerCreateRequest struct {
-	SotreusID     string `json:"sotreusID" binding:"required"`
-	WalletAddress string `json:"walletAddress" binding:"required"`
-	Region        string `json:"region" binding:"required"`
-	Email         string `json:"email,omitempty"`
-	Password      string `json:"password,omitempty"`
+	SotreusID     string       `json:"sotreusID" binding:"required"`
+	WalletAddress string       `json:"walletAddress" binding:"required"`
+	Region        string       `json:"region" binding:"required"`
+	Email         string       `json:"email,omitempty"`
+	Password      string       `json:"password,omitempty"`
+	Firewall      FirewallType `json:"firewall,omitempty"`
 }
 type SotreusRequest struct {
 	VpnId string `json:"vpnId" binding:"required"`
