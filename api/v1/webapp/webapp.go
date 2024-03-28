@@ -20,6 +20,6 @@ func WebappAuth(c *gin.Context) {
 	res := webappResponse{
 		WalletAddress: walletAddress,
 	}
-	httpo.NewSuccessResponseP(200, "Created new charge", res).SendD(c)
+	httpo.NewSuccessResponseP(200, "Auth Successful", res).SendD(c)
 
 }

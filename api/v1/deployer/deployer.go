@@ -92,20 +92,20 @@ func Deploy(c *gin.Context) {
 	}
 	fmt.Println("res: ", string(body))
 
-	// response := new(ServiceInfoSotreus)
+	var fwEndpoint string
 
-	// if err := json.Unmarshal(body, response); err != nil {
-	// 	logwrapper.Errorf("failed to get response: %s", err)
-	// 	httpo.NewErrorResponse(http.StatusInternalServerError, "failed to create VPN").SendD(c)
-	// 	return
-	// }
-
+	if req.Firewall == "adguard" {
+		fwEndpoint = req.Name + "-firewall." + req.Region + ".sotreus.com"
+	} else {
+		fwEndpoint = req.Name + "-firewall." + req.Region + ".sotreus.com/admin"
+	}
+	// Create a new Sotreus instance
 	instance := models.Sotreus{
 		Name:             req.Name,
 		WalletAddress:    walletAddress,
 		Region:           req.Region,
 		VpnEndpoint:      req.Name + "-vpn." + req.Region + ".sotreus.com",
-		FirewallEndpoint: req.Name + "-firewall." + req.Region + ".sotreus.com/admin",
+		FirewallEndpoint: fwEndpoint,
 		Password:         string(req.Password),
 		Firewall:         string(req.Firewall),
 	}
