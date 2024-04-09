@@ -29,6 +29,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 		g.POST("webhook", HandleWebhook)
 		g.Use(paseto.PASETO(false))
 		g.POST("/create-payment", CreatePaymentIntent)
+		g.GET("", CheckSubscription)
 	}
 }
 
@@ -144,4 +145,16 @@ func HandleCanceledOrFailedPaymentIntent(eventDataRaw json.RawMessage) error {
 	}
 
 	return nil
+}
+
+func CheckSubscription(c *gin.Context) {
+	db := dbconfig.GetDb()
+	var subscriptions *models.Subscription
+	err := db.Find(&subscriptions).Error
+	if err != nil {
+		logwrapper.Errorf("Error fetching subscriptions: %v", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": subscriptions})
 }
