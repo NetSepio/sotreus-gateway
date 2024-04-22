@@ -29,6 +29,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 func Deploy(c *gin.Context) {
 	db := dbconfig.GetDb()
 	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRESS)
+	userId := c.GetString(paseto.CTX_USER_ID)
 	fmt.Println(walletAddress)
 
 	var count int64
@@ -108,6 +109,7 @@ func Deploy(c *gin.Context) {
 		FirewallEndpoint: fwEndpoint,
 		Password:         string(req.Password),
 		Firewall:         string(req.Firewall),
+		UserId:           userId,
 	}
 	result := db.Create(&instance)
 	if result.Error != nil {
@@ -123,26 +125,24 @@ func Deploy(c *gin.Context) {
 
 func getMyDeployments(c *gin.Context) {
 	db := dbconfig.GetDb()
-	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRESS)
+	userId := c.GetString(paseto.CTX_USER_ID)
 	var instances []models.Sotreus
-	if err := db.Model(&models.Sotreus{}).Where("wallet_address = ?", walletAddress).Find(&instances).Error; err != nil {
+	if err := db.Model(&models.Sotreus{}).Where("user_id = ?", userId).Find(&instances).Error; err != nil {
 		logwrapper.Errorf("failed to fetch DB : %s", err)
 		httpo.NewErrorResponse(http.StatusInternalServerError, "failed to fetch DB").SendD(c)
 		return
 
 	}
 	httpo.NewSuccessResponseP(200, "VPN's fetched successfully", instances).SendD(c)
-
 }
 
 func deleteDeployment(c *gin.Context) {
 	db := dbconfig.GetDb()
-	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRESS)
+	userId := c.GetString(paseto.CTX_USER_ID)
 	sotreusName := c.Query("id")
-	fmt.Println(walletAddress)
 
 	var instance models.Sotreus
-	err := db.Model(&models.Sotreus{}).Where("wallet_address = ? and name = ?", walletAddress, sotreusName).First(&instance).Error
+	err := db.Model(&models.Sotreus{}).Where("user_id = ? and name = ?", userId, sotreusName).First(&instance).Error
 	if err != nil {
 		logwrapper.Errorf("failed to fetch data from database: %s", err)
 		httpo.NewErrorResponse(http.StatusInternalServerError, err.Error()).SendD(c)
