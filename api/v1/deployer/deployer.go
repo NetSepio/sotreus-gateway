@@ -28,7 +28,7 @@ func ApplyRoutes(r *gin.RouterGroup) {
 
 func Deploy(c *gin.Context) {
 	db := dbconfig.GetDb()
-	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRES)
+	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRESS)
 	fmt.Println(walletAddress)
 
 	var count int64
@@ -123,7 +123,7 @@ func Deploy(c *gin.Context) {
 
 func getMyDeployments(c *gin.Context) {
 	db := dbconfig.GetDb()
-	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRES)
+	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRESS)
 	var instances []models.Sotreus
 	if err := db.Model(&models.Sotreus{}).Where("wallet_address = ?", walletAddress).Find(&instances).Error; err != nil {
 		logwrapper.Errorf("failed to fetch DB : %s", err)
@@ -137,7 +137,7 @@ func getMyDeployments(c *gin.Context) {
 
 func deleteDeployment(c *gin.Context) {
 	db := dbconfig.GetDb()
-	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRES)
+	walletAddress := c.GetString(paseto.CTX_WALLET_ADDRESS)
 	sotreusName := c.Query("id")
 	fmt.Println(walletAddress)
 

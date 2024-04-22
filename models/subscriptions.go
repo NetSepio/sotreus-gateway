@@ -7,4 +7,5 @@ type Subscription struct {
 	UserId    string    `json:"userId,omitempty"`
 	StartTime time.Time `json:"startTime,omitempty"`
 	EndTime   time.Time `json:"endTime,omitempty"`
+	Type      string    `json:"type,omitempty"`
 }

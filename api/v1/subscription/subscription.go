@@ -1,4 +1,4 @@
-package subscriptions
+package subscription
 
 import (
 	"encoding/json"
@@ -24,13 +24,58 @@ import (
 )
 
 func ApplyRoutes(r *gin.RouterGroup) {
-	g := r.Group("/subscriptions")
+	g := r.Group("/subscription")
 	{
 		g.POST("webhook", HandleWebhook)
 		g.Use(paseto.PASETO(false))
+		g.POST("/trial", TrialSubscription)
 		g.POST("/create-payment", CreatePaymentIntent)
 		g.GET("", CheckSubscription)
 	}
+}
+
+func TrialSubscription(c *gin.Context) {
+	userId := c.GetString(paseto.CTX_USER_ID)
+	subscription := models.Subscription{
+		UserId:    userId,
+		StartTime: time.Now(),
+		EndTime:   time.Now().AddDate(0, 0, 7),
+		Type:      "trial",
+	}
+	db := dbconfig.GetDb()
+	if err := db.Model(models.Subscription{}).Create(&subscription).Error; err != nil {
+		logwrapper.Errorf("Error creating subscription: %v", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "subscription created"})
+}
+func CheckSubscription(c *gin.Context) {
+	userId := c.GetString(paseto.CTX_USER_ID)
+
+	db := dbconfig.GetDb()
+	var subscription *models.Subscription
+	err := db.Where("user_id = ?", userId).Order("end_time DESC").First(&subscription).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			res := SubscriptionResponse{
+				Status: "notFound",
+			}
+			c.JSON(http.StatusNotFound, res)
+		}
+		logwrapper.Errorf("Error fetching subscriptions: %v", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	var status = "expired"
+	if time.Now().Before(subscription.EndTime) {
+		status = "active"
+	}
+	res := SubscriptionResponse{
+		Subscription: subscription,
+		Status:       status,
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 func CreatePaymentIntent(c *gin.Context) {
@@ -123,7 +168,6 @@ func HandleWebhook(c *gin.Context) {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		fmt.Println("minting nft -- 111NFT")
 
 	case stripe.EventTypePaymentIntentCanceled:
 		err := HandleCanceledOrFailedPaymentIntent(event.Data.Raw)
@@ -145,16 +189,4 @@ func HandleCanceledOrFailedPaymentIntent(eventDataRaw json.RawMessage) error {
 	}
 
 	return nil
-}
-
-func CheckSubscription(c *gin.Context) {
-	db := dbconfig.GetDb()
-	var subscriptions *models.Subscription
-	err := db.Find(&subscriptions).Error
-	if err != nil {
-		logwrapper.Errorf("Error fetching subscriptions: %v", err)
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": subscriptions})
 }
